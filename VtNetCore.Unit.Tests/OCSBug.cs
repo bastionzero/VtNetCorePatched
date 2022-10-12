@@ -90,6 +90,27 @@ public class OCSBug
         Assert.Equal(0, d.GetInputBuffer().Position);
         Assert.Equal(0, d.GetInputBuffer().Buffer.Length);
     }
+
+    [Fact]
+    public void OSCDOSTest()
+    {
+        var TerminalController = new VirtualTerminalController();
+        var d = new TransparentDataConsumer(TerminalController);
+
+        int count = 250;
+
+        // OSC has no beep so it will pump forever
+        // ESC-]-A
+        Push(d, "\u001b]A");
+
+        for (int i=0; i< count; i++) {
+            Push(d, "TheQuickBrownFoxjumpedOverTheLazyDog.");
+        }
+
+        Assert.Equal(0, d.GetInputBuffer().Remaining);
+        Assert.Equal(0, d.GetInputBuffer().Position);
+        Assert.Equal(0, d.GetInputBuffer().Buffer.Length);
+    }
 }
 
 }
